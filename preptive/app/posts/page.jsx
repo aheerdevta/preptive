@@ -190,8 +190,8 @@ export default async function PostsPage({ searchParams }) {
   '@type': 'ItemList',
   itemListOrder: 'https://schema.org/ItemListOrderDescending',
   numberOfItems: totalPosts,
-  name: 'Study Materials & Exam Guides',
-  description: 'Comprehensive collection of study materials and exam preparation guides',
+  name: 'All Government Exam Updates – Syllabus, Admit Card, Results & Jobs',
+  description: 'Comprehensive collection of government exam notifications, syllabus, admit cards, results, job updates, important dates, and exam preparation guides.',
   url: `https://www.preptive.in/posts${currentPage > 1 ? `?page=${currentPage}` : ''}`,
   itemListElement: posts && posts.length > 0
     ? posts.slice(0, 10).map((post, index) => ({

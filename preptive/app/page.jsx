@@ -97,13 +97,13 @@ const PostList = ({ posts, showLoadMore = true, onLoadMore }) => {
         {posts
           ?.sort((a, b) => new Date(b.published_at) - new Date(a.published_at))
           .map((post) => (
-            <article key={post.id} className="w-full" itemScope itemType="https://schema.org/Article">
+            <article key={post.id} className="w-full">
               <Link 
                 href={`/posts/${post.slug}`} 
                 className="block pb-4 md:pb-6 border-b border-gray-200 group w-full"
-                itemProp="url"
+                
               >
-                <meta itemProp="url" content={`https://www.preptive.in/posts/${post.slug}`} />
+               
                 
                 {/* Meta Information Row */}
                 <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-2">
@@ -111,7 +111,7 @@ const PostList = ({ posts, showLoadMore = true, onLoadMore }) => {
                   {post.post_category_map?.[0]?.category?.name && (
                     <span 
                       className="px-2.5 py-1 text-xs font-medium text-blue-700 bg-blue-50 rounded-full border border-blue-100"
-                      itemProp="articleSection"
+                      
                     >
                       {post.post_category_map[0].category.name}
                     </span>
@@ -128,7 +128,6 @@ const PostList = ({ posts, showLoadMore = true, onLoadMore }) => {
                   <time 
                     className="text-xs text-gray-500 flex items-center ml-auto"
                     dateTime={post.published_at}
-                    itemProp="datePublished"
                   >
                     <Clock className="w-3 h-3 mr-1 flex-shrink-0" aria-hidden="true" />
                     {formatDate(post.published_at)}
@@ -143,7 +142,7 @@ const PostList = ({ posts, showLoadMore = true, onLoadMore }) => {
                     text-base md:text-lg lg:text-xl
                     w-full
                   "
-                  itemProp="headline"
+                  
                 >
                   <span className="relative">
                     {post.title}
@@ -162,7 +161,7 @@ const PostList = ({ posts, showLoadMore = true, onLoadMore }) => {
                 {post.short_description && (
                   <p 
                     className="mt-2 text-gray-600 text-sm md:text-base line-clamp-2"
-                    itemProp="description"
+                   
                   >
                     {post.short_description}
                   </p>
@@ -497,8 +496,8 @@ export default async function HomePage() {
               logo: 'https://www.preptive.in/logo.png',
               sameAs: [
                 'https://twitter.com/preptive',
-                'https://facebook.com/preptive',
-                'https://linkedin.com/company/preptive'
+                'https://instagram.com/preptive.in',
+                'https://linkedin.com/company/preptive-in'
               ]
             }
           })
