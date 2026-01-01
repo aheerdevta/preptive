@@ -185,37 +185,37 @@ export default async function PostsPage({ searchParams }) {
   
   // ========== SEO ENHANCEMENTS ==========
   
-  // Schema.org for Article List (only create if we have posts)
-  const articleListSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'ItemList',
-    itemListOrder: 'https://schema.org/ItemListOrderDescending',
-    numberOfItems: totalPosts,
-    name: 'Study Materials & Exam Guides',
-    description: 'Comprehensive collection of study materials and exam preparation guides',
-    url: `https://www.preptive.in/posts${currentPage > 1 ? `?page=${currentPage}` : ''}`,
-    itemListElement: posts && posts.length > 0 ? posts.slice(0, 10).map((post, index) => ({
-      '@type': 'ListItem',
-      position: index + 1 + ((currentPage - 1) * postsPerPage),
-      item: {
-        '@type': 'Article',
-        headline: post.title,
-        description: post.short_description,
-        image: post.featured_image,
-        datePublished: post.published_at,
-        dateModified: post.updated_at,
-        author: post.author ? {
-          '@type': 'Person',
-          name: post.author.name,
-        } : undefined,
-        url: `https://www.preptive.in/posts/${post.slug}`,
-        mainEntityOfPage: {
-          '@type': 'WebPage',
-          '@id': `https://www.preptive.in/posts/${post.slug}`,
-        },
-      },
-    })) : [],
-  };
+ const articleListSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  itemListOrder: 'https://schema.org/ItemListOrderDescending',
+  numberOfItems: totalPosts,
+  name: 'Study Materials & Exam Guides',
+  description: 'Comprehensive collection of study materials and exam preparation guides',
+  url: `https://www.preptive.in/posts${currentPage > 1 ? `?page=${currentPage}` : ''}`,
+  itemListElement: posts && posts.length > 0
+    ? posts.slice(0, 10).map((post, index) => ({
+        '@type': 'ListItem',
+        position: index + 1 + ((currentPage - 1) * postsPerPage),
+        url: `https://www.preptive.in/posts/${post.slug}`
+      }))
+    : [],
+};
+
+
+const collectionPageSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Latest Government Exams, Admit Cards, Results & Syllabus',
+  description: 'Stay updated with the latest government exam notifications including syllabus, exam pattern, admit cards, results, job alerts, important dates, and preparation resources for SSC, Railway, Banking, Defence, State, and other competitive exams.',
+  url: 'https://www.preptive.in/posts',
+  isPartOf: {
+    '@type': 'WebSite',
+    name: 'Preptive',
+    url: 'https://www.preptive.in',
+  }
+};
+
 
   // Breadcrumb Schema
   const breadcrumbSchema = {
@@ -254,11 +254,13 @@ export default async function PostsPage({ searchParams }) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleListSchema) }}
       />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionPageSchema) }}
+      />
 
       <div 
         className="min-h-screen bg-gradient-to-b from-gray-50 to-white"
-        itemScope
-        itemType="https://schema.org/CollectionPage"
       >
         {/* Breadcrumb Navigation */}
         <nav 
@@ -270,9 +272,8 @@ export default async function PostsPage({ searchParams }) {
               <Link 
                 href="/" 
                 className="text-gray-500 hover:text-gray-700 transition-colors"
-                itemProp="item"
               >
-                <span itemProp="name">Home</span>
+                <span>Home</span>
               </Link>
             </li>
             <li className="flex items-center">
@@ -289,7 +290,6 @@ export default async function PostsPage({ searchParams }) {
               </svg>
               <span 
                 className="ml-2 text-gray-700 font-semibold"
-                itemProp="name"
                 aria-current="page"
               >
                 All Posts
@@ -304,17 +304,13 @@ export default async function PostsPage({ searchParams }) {
           {/* Posts List */}
 <div 
   className="space-y-0"
-  itemScope
-  itemType="https://schema.org/ItemList"
 >
   {posts && posts.length > 0 ? (
     posts.map((post, index) => (
       <article 
         key={post.id}
         className="group relative py-8 border-b border-gray-200 last:border-b-0 hover:bg-gray-50 transition-colors duration-300"
-        itemScope
-        itemType="https://schema.org/Article"
-        itemProp="itemListElement"
+        
       >
         {/* Entire card is clickable via wrapping Link */}
         <Link 
@@ -332,7 +328,7 @@ export default async function PostsPage({ searchParams }) {
               key={examinations.id}
               href={`/exam/${examinations.slug || generateSlug(examinations.name)}`}
               className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800 hover:bg-purple-200 transition-colors no-underline relative z-30"
-              itemProp="keywords"
+              
             >
               <svg 
                 className="w-3 h-3 mr-1" 
@@ -358,7 +354,7 @@ export default async function PostsPage({ searchParams }) {
               key={categories.id}
               href={`/category/${categories.slug}`}
               className="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-800 hover:bg-blue-200 transition-colors no-underline relative z-30"
-              itemProp="articleSection"
+              
             >
               {categories.name}
             </Link>
@@ -370,7 +366,7 @@ export default async function PostsPage({ searchParams }) {
           <Link 
             href={`/posts/${post.slug}`}
             className="text-1xl md:text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors leading-tight block no-underline"
-            itemProp="headline"
+            
           >
             {post.title}
           </Link>
@@ -385,7 +381,7 @@ export default async function PostsPage({ searchParams }) {
             <Link 
               href={`/posts/${post.slug}`}
               className="text-gray-600 group-hover:text-gray-800 leading-relaxed transition-colors block no-underline"
-              itemProp="description"
+             
             >
               {post.short_description}
             </Link>
@@ -401,22 +397,17 @@ export default async function PostsPage({ searchParams }) {
             {post.author && (
               <div 
                 className="flex items-center space-x-2 group/author"
-                itemProp="author"
-                itemScope
-                itemType="https://schema.org/Person"
               >
                 {post.author.avatar_url && (
                   <img
                     src={post.author.avatar_url}
                     alt={post.author.name}
                     className="w-8 h-8 rounded-full"
-                    itemProp="image"
                     loading="lazy"
                   />
                 )}
                 <span 
                   className="text-gray-700 font-medium hover:text-blue-600 transition-colors"
-                  itemProp="name"
                 >
                   {post.author.name}
                 </span>
@@ -428,7 +419,6 @@ export default async function PostsPage({ searchParams }) {
               <time 
                 className="text-gray-500 text-sm group-hover:text-gray-700 transition-colors"
                 dateTime={post.published_at}
-                itemProp="datePublished"
               >
                 {formatDate(post.published_at)}
               </time>
@@ -536,7 +526,6 @@ export default async function PostsPage({ searchParams }) {
                     <Link
                       href={`/posts?page=${currentPage - 1}`}
                       className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                      itemProp="url"
                       rel="prev"
                     >
                       <svg 
@@ -592,7 +581,6 @@ export default async function PostsPage({ searchParams }) {
                               ? 'border-blue-500 bg-blue-50 text-blue-600'
                               : 'border-gray-300 text-gray-700 hover:bg-gray-50'
                           }`}
-                          itemProp="url"
                           aria-current={currentPage === pageNum ? 'page' : undefined}
                         >
                           {pageNum}
@@ -612,7 +600,6 @@ export default async function PostsPage({ searchParams }) {
                       <Link
                         href={`/posts?page=${totalPages}`}
                         className="px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-md transition-colors"
-                        itemProp="url"
                       >
                         {totalPages}
                       </Link>
@@ -632,7 +619,6 @@ export default async function PostsPage({ searchParams }) {
                     <Link
                       href={`/posts?page=${currentPage + 1}`}
                       className="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors"
-                      itemProp="url"
                       rel="next"
                     >
                       Next
