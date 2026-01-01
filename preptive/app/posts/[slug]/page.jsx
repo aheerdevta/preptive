@@ -268,23 +268,7 @@ export default async function PostPage({ params }) {
     const wordCount = post.content ? JSON.stringify(post.content).split(/\s+/).length : 0;
     const readingTime = Math.ceil(wordCount / 200) || 5;
 
-    // Generate FAQ schema
-    const faqSchema = {
-      '@context': 'https://schema.org',
-      '@type': 'FAQPage',
-      mainEntity: headings
-        .filter(h => h.level === 2)
-        .slice(0, 10)
-        .map((heading, index) => ({
-          '@type': 'Question',
-          name: heading.text,
-          acceptedAnswer: {
-            '@type': 'Answer',
-            text: `Learn about ${heading.text} in this comprehensive guide covering all aspects for ${post.exams?.[0]?.examinations?.name || 'competitive exam'} preparation.`,
-          },
-        })),
-    };
-
+    
     // Breadcrumb schema
     const breadcrumbSchema = {
       '@context': 'https://schema.org',
@@ -317,7 +301,7 @@ export default async function PostPage({ params }) {
       ],
     };
 
-    // Article schema for rich snippets
+    // Article schema for rich snippets - ONLY ONE SCHEMA
     const articleSchema = {
       '@context': 'https://schema.org',
       '@type': 'Article',
@@ -349,19 +333,46 @@ export default async function PostPage({ params }) {
       timeRequired: `PT${readingTime}M`,
     };
 
+    // Check if FAQ schema exists in content
+    let faqSchema = null;
+    if (post.content && Array.isArray(post.content)) {
+      const faqItems = post.content.filter(item => 
+        item.type === 'faq' && item.question && item.answer
+      );
+      
+      if (faqItems.length > 0) {
+        faqSchema = {
+          '@context': 'https://schema.org',
+          '@type': 'FAQPage',
+          mainEntity: faqItems.map((item, index) => ({
+            '@type': 'Question',
+            name: item.question,
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: item.answer
+            }
+          }))
+        };
+      }
+    }
+
     return (
       <>
-        {/* Structured Data */}
+        {/* Structured Data - Only three scripts max */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
           key="article-schema"
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-          key="faq-schema"
-        />
+        
+        {faqSchema && (
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+            key="faq-schema"
+          />
+        )}
+        
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
@@ -541,8 +552,6 @@ export default async function PostPage({ params }) {
               </aside>
             )}
 
-          
-
             <main>
               <div 
                 className="prose prose-lg max-w-none mb-10" 
@@ -576,8 +585,6 @@ export default async function PostPage({ params }) {
                   </div>
                 </div>
               )}
-
-              
 
               <div className="mt-12">
                 <ShareButtons

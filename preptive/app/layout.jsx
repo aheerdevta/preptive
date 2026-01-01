@@ -18,26 +18,7 @@ export default function RootLayout({ children }) {
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content="#f8f9f9ff" />
         
-        {/* Structured Data for SEO */}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              "@context": "https://schema.org",
-              "@type": "EducationalOrganization",
-              "name": "Preptive",
-              "description": "Government Job Updates Portal",
-              "url": "https://preptive.in",
-              "logo": "https://preptive.in/logo.png",
-              "sameAs": [
-                "https://facebook.com/preptive",
-                "https://twitter.com/preptive",
-                "https://linkedin.com/company/preptive"
-              ]
-            })
-          }}
-          suppressHydrationWarning
-        />
+        
       </head>
       <body 
         className="antialiased min-h-screen flex flex-col bg-gradient-to-br from-slate-500 via-emerald-50 to-sky-50"
