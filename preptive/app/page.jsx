@@ -496,7 +496,7 @@ export default async function HomePage() {
               logo: 'https://www.preptive.in/logo.png',
               sameAs: [
                 'https://twitter.com/preptive',
-                'https://instagram.com/preptive.in',
+                'https://www.instagram.com/preptive.in',
                 'https://linkedin.com/company/preptive-in'
               ]
             }

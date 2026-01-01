@@ -180,7 +180,7 @@ export default async function CategoryPage({ params }) {
                 logo: 'https://www.preptive.in/logo.png',
                 sameAs: [
                   'https://twitter.com/preptive',
-                  'https://facebook.com/preptive',
+                  'https://www.instagram.com/preptive.in',
                   'https://linkedin.com/company/preptive-in'
                 ]
               },
