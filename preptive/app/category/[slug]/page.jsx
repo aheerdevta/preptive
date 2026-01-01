@@ -181,7 +181,7 @@ export default async function CategoryPage({ params }) {
                 sameAs: [
                   'https://twitter.com/preptive',
                   'https://facebook.com/preptive',
-                  'https://linkedin.com/company/preptive'
+                  'https://linkedin.com/company/preptive-in'
                 ]
               },
               mainEntity: {
@@ -191,21 +191,7 @@ export default async function CategoryPage({ params }) {
                   '@type': 'ListItem',
                   position: index + 1,
                   url: `https://www.preptive.in/posts/${post.slug}`,
-                  item: {
-                    '@type': 'Article',
-                    headline: post.title,
-                    description: post.short_description,
-                    image: post.featured_image,
-                    datePublished: post.published_at,
-                    author: {
-                      '@type': 'Person',
-                      name: post.author?.name
-                    },
-                    publisher: {
-                      '@type': 'Organization',
-                      name: 'Preptive'
-                    }
-                  }
+                
                 })) || []
               }
             })

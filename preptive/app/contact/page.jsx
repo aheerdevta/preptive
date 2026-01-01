@@ -192,12 +192,12 @@ export default function ContactPage() {
             "@type": "ContactPage",
             "name": "Contact PrepTive",
             "description": "Contact page for PrepTive educational platform - submit exam updates, corrections, feedback, or get support",
-            "url": "https://preptive.in/contact",
+            "url": "https://www.preptive.in/contact",
             "mainEntity": {
               "@type": "Organization",
               "name": "PrepTive",
               "description": "Educational platform providing latest updates on competitive exams across India",
-              "url": "https://preptive.in",
+              "url": "https://www.preptive.in",
               "contactPoint": {
                 "@type": "ContactPoint",
                 "telephone": "+91-8381873457",
