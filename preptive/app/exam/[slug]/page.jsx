@@ -221,12 +221,7 @@ export default async function ExamPage({ params }) {
                 itemListElement: posts.map((post, index) => ({
                   '@type': 'ListItem',
                   position: index + 1,
-                  item: {
-                    '@type': 'Article',
-                    headline: post.title,
-                    description: post.short_description,
-                    url: `https://www.preptive.in/posts/${post.slug}`
-                  }
+                  
                 }))
               }
             })
