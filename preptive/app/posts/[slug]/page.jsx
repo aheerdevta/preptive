@@ -405,12 +405,12 @@ export default async function PostPage({ params }) {
             <header className="mb-12">
               <div className="flex flex-col lg:flex-row gap-8">
                 <div className="lg:w-3/4">
-                  <div className="flex flex-wrap gap-2 mb-4" itemProp="articleSection">
+                  <div className="flex flex-wrap gap-2 mb-4">
                     {post.categories?.map(({ categories }) => categories && (
                       <span
                         key={categories.id}
                         className="inline-block bg-blue-100 text-blue-800 text-sm font-semibold px-3 py-1 rounded-full"
-                        itemProp="keywords"
+                        
                       >
                         {categories.name}
                       </span>
@@ -419,7 +419,7 @@ export default async function PostPage({ params }) {
                       <span
                         key={examinations.id}
                         className="inline-block bg-purple-100 text-purple-800 text-sm font-semibold px-3 py-1 rounded-full"
-                        itemProp="keywords"
+                        
                       >
                         {examinations.name}
                       </span>
@@ -428,7 +428,7 @@ export default async function PostPage({ params }) {
 
                   <h1 
                     className="text-2xl md:text-3xl lg:text-3xl font-bold text-gray-900 mb-2 leading-tight"
-                    itemProp="headline"
+                    
                   >
                     {post.title}
                   </h1>
@@ -436,7 +436,7 @@ export default async function PostPage({ params }) {
                   {post.short_description && (
                     <p 
                       className="text-xl text-gray-600 mb-4" 
-                      itemProp="description"
+                      
                       style={{ lineHeight: '1.8' }}
                     >
                       {post.short_description}
@@ -447,9 +447,7 @@ export default async function PostPage({ params }) {
                     {post.author && (
                       <div
                         className="flex items-center gap-2"
-                        itemProp="author"
-                        itemScope
-                        itemType="https://schema.org/Person"
+                        
                       >
                         <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200">
                           {post.author.avatar_url && (
@@ -457,7 +455,6 @@ export default async function PostPage({ params }) {
                               src={post.author.avatar_url}
                               alt={post.author.name}
                               className="w-full h-full object-cover"
-                              itemProp="image"
                               width="40"
                               height="40"
                             />
@@ -467,14 +464,14 @@ export default async function PostPage({ params }) {
                         <div>
                           <Link
                             href={`/author/${post.author.slug || generateSlug(post.author.name)}`}
-                            itemProp="url"
+                            
                             className="font-semibold hover:underline"
                           >
-                            <span itemProp="name">{post.author.name}</span>
+                            <span>{post.author.name}</span>
                           </Link>
 
                           {post.author.bio && (
-                            <span className="text-sm ml-2" itemProp="description">
+                            <span className="text-sm ml-2">
                               • {post.author.bio}
                             </span>
                           )}
@@ -485,7 +482,6 @@ export default async function PostPage({ params }) {
                     <div
                       className="flex items-center gap-6 overflow-x-auto whitespace-nowrap 
                                max-sm:gap-3 max-sm:text-xs max-sm:overflow-x-scroll"
-                      itemProp="datePublished"
                       content={post.published_at}
                     >
                       <div className="flex items-center gap-2 max-sm:gap-1">
@@ -534,7 +530,6 @@ export default async function PostPage({ params }) {
                           src={post.featured_image}
                           alt={post.image_alt || post.title}
                           className="w-full h-auto object-cover"
-                          itemProp="image"
                           loading="eager"
                           width="600"
                           height="400"
@@ -555,7 +550,7 @@ export default async function PostPage({ params }) {
             <main>
               <div 
                 className="prose prose-lg max-w-none mb-10" 
-                itemProp="articleBody"
+                
                 style={{ 
                   fontSize: '1.125rem',
                   lineHeight: '1.8',
