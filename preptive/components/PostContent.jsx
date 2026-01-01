@@ -316,11 +316,9 @@ export default function PostContent({ content, language }) {
         const answerContent = renderTextWithLinks(item.answer, language);
         
         return (
-          <div key={index} className="mb-2" itemScope itemType="https://schema.org/FAQPage">
+          <div key={index} className="mb-2" >
             <div 
-              itemScope 
-              itemProp="mainEntity" 
-              itemType="https://schema.org/Question"
+              
               className="border border-gray-200 rounded-lg overflow-hidden"
             >
               <button
@@ -364,9 +362,7 @@ export default function PostContent({ content, language }) {
               >
                 <div 
                   className="px-6 pb-6 pt-2 border-t border-gray-100 bg-gray-50"
-                  itemScope
-                  itemProp="acceptedAnswer"
-                  itemType="https://schema.org/Answer"
+                 
                 >
                   <div 
                     className={`prose prose-lg max-w-none ${
