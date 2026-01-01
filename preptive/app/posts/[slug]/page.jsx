@@ -313,7 +313,7 @@ export default async function PostPage({ params }) {
       author: post.author ? {
         '@type': 'Person',
         name: post.author.name,
-        url: post.author.website || `https://www.preptive.in/authors/${generateSlug(post.author.name)}`,
+        url: `https://www.preptive.in/authors/${post.author.slug || generateSlug(post.author.name)}`,
       } : undefined,
       publisher: {
         '@type': 'Organization',
@@ -358,7 +358,7 @@ export default async function PostPage({ params }) {
 
     return (
       <>
-        {/* Structured Data - Only three scripts max */}
+        {/* Structured Data - Only these three scripts */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
@@ -561,10 +561,12 @@ export default async function PostPage({ params }) {
                   lineHeight: '1.8',
                 }}
               >
+                {/* IMPORTANT: Pass schema={false} to PostContent to prevent duplicate schema generation */}
                 <PostContent 
                   content={post.content} 
                   language={post.language} 
                   headings={headings}
+                  schema={false}
                 />
               </div>
 
