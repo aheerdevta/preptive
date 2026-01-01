@@ -179,7 +179,6 @@ export default async function CategoryPage({ params }) {
                 url: 'https://www.preptive.in',
                 logo: 'https://www.preptive.in/logo.png',
                 sameAs: [
-                  'https://twitter.com/preptive',
                   'https://www.instagram.com/preptive.in',
                   'https://linkedin.com/company/preptive-in'
                 ]

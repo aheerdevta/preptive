@@ -53,20 +53,16 @@ const Footer = () => {
               <div className="flex space-x-3">
                 {[
                   { 
-                    icon: <RiTwitterLine />, 
+                    icon: <RiLinkedinLine />, 
                     color: 'text-sky-500',
-                    url: 'https://twitter.com/yourusername' 
+                    url: 'https://www.linkedin.com/company/preptive-in/' 
                   },
                   { 
                     icon: <RiInstagramLine />, 
                     color: 'text-pink-600',
-                    url: 'https://instagram.com/yourusername' 
+                    url: 'https://instagram.com/preptive.in' 
                   },
-                  { 
-                    icon: <RiYoutubeLine />, 
-                    color: 'text-red-600',
-                    url: 'https://youtube.com/c/yourchannel' 
-                  },
+                  
                 ].map((social, index) => (
                   <a
                     key={index}

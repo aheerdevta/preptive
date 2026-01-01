@@ -175,12 +175,12 @@ export default function ContactPage() {
         <title>Contact PrepTive | Exam Updates & Support | 24/7 Assistance</title>
         <meta name="description" content="Contact PrepTive for exam updates, corrections, feedback, or support. Report updates for UPSC, SSC, Banking, Railways, JEE, NEET & more. Quick response guaranteed." />
         <meta property="og:title" content="Contact PrepTive | Exam Updates & Support" />
-        <meta property="og:url" content="https://preptive.in/contact" />
+        <meta property="og:url" content="https://www.preptive.in/contact" />
         <meta property="og:type" content="website" />
         <meta name="twitter:title" content="Contact PrepTive | Exam Updates & Support" />
         <meta name="twitter:description" content="Contact us for exam updates, corrections, or support. Quick response for all competitive exam queries." />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://preptive.in/contact" />
+        <link rel="canonical" href="https://www.preptive.in/contact" />
       </Head>
 
       {/* Structured Data for SEO */}
