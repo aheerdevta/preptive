@@ -1,7 +1,7 @@
 // app/search/page.jsx
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/utils/supabase/client';
@@ -13,6 +13,11 @@ function SearchContent() {
   const searchParams = useSearchParams();
   const supabase = createClient();
 
+  // Refs to prevent infinite loops
+  const isInitialMount = useRef(true);
+  const lastSearchQuery = useRef('');
+  const lastCurrentPage = useRef(1);
+
   // State
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -21,42 +26,44 @@ function SearchContent() {
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(totalResults / 10);
 
-  // Initialize search query from URL
+  // Initialize from URL on component mount only
   useEffect(() => {
     const q = searchParams.get('q') || '';
     const page = parseInt(searchParams.get('page') || '1');
-    setSearchQuery(q);
-    setCurrentPage(page);
-  }, [searchParams]);
-
-  // Search effect
-  useEffect(() => {
-    if (searchQuery || currentPage > 1) {
-      performSearch();
-    }
-  }, [searchQuery, currentPage]);
-
-  // Update URL
-  useEffect(() => {
-    const params = new URLSearchParams();
-    if (searchQuery) params.set('q', searchQuery);
-    if (currentPage > 1) params.set('page', currentPage.toString());
     
-    // Only update if params have changed
-    const currentParams = searchParams.toString();
-    const newParams = params.toString();
-    
-    if (currentParams !== newParams) {
-      router.replace(`/search?${newParams}`, { scroll: false });
+    if (q !== searchQuery) {
+      setSearchQuery(q);
     }
-  }, [searchQuery, currentPage, router, searchParams]);
+    
+    if (page !== currentPage) {
+      setCurrentPage(page);
+    }
+    
+    // Set initial values for comparison
+    lastSearchQuery.current = q;
+    lastCurrentPage.current = page;
+    
+    // Perform initial search if query exists
+    if (q) {
+      performSearch(q, page);
+    }
+  }, []); // Empty dependency array - runs only once on mount
 
-  // Perform search
-  const performSearch = async () => {
+  // Memoized search function
+  const performSearch = useCallback(async (query = searchQuery, page = currentPage) => {
+    // Prevent duplicate searches
+    if (query === lastSearchQuery.current && page === lastCurrentPage.current && !isInitialMount.current) {
+      return;
+    }
+    
+    lastSearchQuery.current = query;
+    lastCurrentPage.current = page;
+    isInitialMount.current = false;
+
     setIsLoading(true);
 
     try {
-      let query = supabase
+      let supabaseQuery = supabase
         .from('posts')
         .select(`
           id,
@@ -68,19 +75,19 @@ function SearchContent() {
         .eq('status', 'published');
 
       // Apply search query
-      if (searchQuery.trim()) {
-        query = query.or(`title.ilike.%${searchQuery}%,short_description.ilike.%${searchQuery}%`);
+      if (query.trim()) {
+        supabaseQuery = supabaseQuery.or(`title.ilike.%${query}%,short_description.ilike.%${query}%`);
       }
 
       // Sort by latest first
-      query = query.order('published_at', { ascending: false });
+      supabaseQuery = supabaseQuery.order('published_at', { ascending: false });
 
       // Pagination
-      const from = (currentPage - 1) * 10;
+      const from = (page - 1) * 10;
       const to = from + 9;
-      query = query.range(from, to);
+      supabaseQuery = supabaseQuery.range(from, to);
 
-      const { data, error, count } = await query;
+      const { data, error, count } = await supabaseQuery;
 
       if (error) throw error;
 
@@ -93,12 +100,17 @@ function SearchContent() {
     } finally {
       setIsLoading(false);
     }
+  }, [supabase, searchQuery, currentPage]);
+
+  // Handle search input change with debounce
+  const handleSearchChange = (value) => {
+    setSearchQuery(value);
   };
 
-  // Handle search
-  const handleSearch = (value) => {
-    setSearchQuery(value);
-    setCurrentPage(1);
+  // Handle search submission
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    updateURLAndSearch();
   };
 
   // Clear search
@@ -107,12 +119,49 @@ function SearchContent() {
     setSearchResults([]);
     setTotalResults(0);
     setCurrentPage(1);
+    
+    // Update URL
+    router.replace('/search', { scroll: false });
   };
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    performSearch();
+  // Update URL and trigger search
+  const updateURLAndSearch = useCallback(() => {
+    const params = new URLSearchParams();
+    if (searchQuery.trim()) {
+      params.set('q', searchQuery.trim());
+    }
+    if (currentPage > 1) {
+      params.set('page', currentPage.toString());
+    }
+    
+    const newUrl = `/search${params.toString() ? `?${params.toString()}` : ''}`;
+    
+    // Only update if URL has actually changed
+    const currentUrl = window.location.pathname + window.location.search;
+    if (currentUrl !== newUrl) {
+      router.replace(newUrl, { scroll: false });
+    }
+    
+    // Perform search
+    performSearch(searchQuery.trim(), currentPage);
+  }, [searchQuery, currentPage, router, performSearch]);
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || newPage > totalPages) return;
+    
+    setCurrentPage(newPage);
+    
+    // Update URL and search after state update
+    setTimeout(() => {
+      updateURLAndSearch();
+    }, 0);
+  };
+
+  // Handle manual search button
+  const handleManualSearch = () => {
+    setCurrentPage(1);
+    updateURLAndSearch();
   };
 
   return (
@@ -144,29 +193,37 @@ function SearchContent() {
 
         {/* Search Bar */}
         <div className="mb-8">
-          <form onSubmit={handleSubmit} className="relative">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => handleSearch(e.target.value)}
-              placeholder="Search exam updates (e.g., SSC CGL 2024, UPSC syllabus)"
-              className="w-full px-5 py-4 bg-white rounded-lg border border-gray-300 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={clearSearch}
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                aria-label="Clear search"
-              >
-                ✕
-              </button>
-            )}
+          <form onSubmit={handleSearchSubmit} className="flex gap-2">
+            <div className="relative flex-1">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                placeholder="Search exam updates (e.g., SSC CGL 2024, UPSC syllabus)"
+                className="w-full px-5 py-4 bg-white rounded-lg border border-gray-300 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-200"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={clearSearch}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  aria-label="Clear search"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
+            <button
+              type="submit"
+              className="px-6 py-4 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2"
+            >
+              Search
+            </button>
           </form>
         </div>
 
         {/* Results Stats */}
-        {searchQuery && (
+        {searchQuery && !isLoading && (
           <div className="mb-6">
             <p className="text-gray-700">
               Found {totalResults} result{totalResults !== 1 ? 's' : ''} for "{searchQuery}"
@@ -230,10 +287,10 @@ function SearchContent() {
         )}
 
         {/* Pagination */}
-        {totalPages > 1 && (
+        {totalPages > 1 && !isLoading && (
           <div className="flex justify-center items-center gap-4 mt-10 pt-6 border-t">
             <button
-              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              onClick={() => handlePageChange(currentPage - 1)}
               disabled={currentPage === 1}
               className="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -243,7 +300,7 @@ function SearchContent() {
               Page {currentPage} of {totalPages}
             </span>
             <button
-              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              onClick={() => handlePageChange(currentPage + 1)}
               disabled={currentPage === totalPages}
               className="px-4 py-2 bg-white border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
             >
@@ -256,6 +313,9 @@ function SearchContent() {
         {!searchQuery && !isLoading && (
           <div className="text-center py-12 text-gray-500">
             <p>Enter a search term to find latest exam updates</p>
+            <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-w-lg mx-auto">
+             
+            </div>
           </div>
         )}
       </div>
@@ -300,6 +360,4 @@ export default function SearchPage() {
   );
 }
 
-// If you're using Next.js 13+ and want static generation,
-// you can add this export to force dynamic rendering:
 export const dynamic = 'force-dynamic';
