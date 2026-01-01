@@ -9,7 +9,7 @@ import AuthorBio from '@/components/AuthorBio';
 import Breadcrumb from '@/components/Breadcrumb';
 import ReadingProgress from '@/components/ReadingProgress';
 import ShareButtons from '@/components/ShareButtons';
-import StructuredData from '@/components/StructuredData';
+
 import AdBanner from '@/components/AdBanner';
 import ScrollToTop from '@/components/ScrollToTop';
 import EstimatedReadTime from '@/components/EstimatedReadTime';
